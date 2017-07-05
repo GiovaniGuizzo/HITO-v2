@@ -1,11 +1,12 @@
 package br.ufpr.inf.gres.hito.lowlevelheuristic;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
+import org.uma.jmetal.operator.impl.crossover.NullCrossover;
+import org.uma.jmetal.operator.impl.mutation.NullMutation;
 import org.uma.jmetal.solution.Solution;
 
 /**
@@ -15,8 +16,6 @@ import org.uma.jmetal.solution.Solution;
  */
 public class LowLevelHeuristic<S extends Solution<?>> {
 
-    protected final String name;
-
     protected double quality;
     protected double time;
 
@@ -24,14 +23,13 @@ public class LowLevelHeuristic<S extends Solution<?>> {
     protected MutationOperator<S> mutationOperator;
 
     public LowLevelHeuristic(CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator) {
-        Preconditions.checkArgument(crossoverOperator != null && mutationOperator != null, "A Low Level Heuristic must have at least one operator.");
+        Preconditions.checkArgument((crossoverOperator != null && !(crossoverOperator instanceof NullCrossover))
+                || (mutationOperator != null && !(mutationOperator instanceof NullMutation)),
+                "A Low Level Heuristic must have at least one operator.");
         this.quality = 0.0;
         this.time = 0;
-        this.crossoverOperator = crossoverOperator;
-        this.mutationOperator = mutationOperator;
-
-        this.name = "C: " + (crossoverOperator != null ? crossoverOperator.getClass().getSimpleName() : "NONE")
-                + ", M: " + (mutationOperator != null ? mutationOperator.getClass().getSimpleName() : "NONE");
+        this.setCrossoverOperator(crossoverOperator);
+        this.setMutationOperator(mutationOperator);
     }
 
     public double getQuality() {
@@ -55,7 +53,11 @@ public class LowLevelHeuristic<S extends Solution<?>> {
     }
 
     public void setCrossoverOperator(CrossoverOperator<S> crossoverOperator) {
-        this.crossoverOperator = crossoverOperator;
+        if (crossoverOperator != null) {
+            this.crossoverOperator = crossoverOperator;
+        } else {
+            this.crossoverOperator = new NullCrossover<>();
+        }
     }
 
     public MutationOperator<S> getMutationOperator() {
@@ -63,41 +65,36 @@ public class LowLevelHeuristic<S extends Solution<?>> {
     }
 
     public void setMutationOperator(MutationOperator<S> mutationOperator) {
-        this.mutationOperator = mutationOperator;
+        if (mutationOperator != null) {
+            this.mutationOperator = mutationOperator;
+        } else {
+            this.mutationOperator = new NullMutation<>();
+        }
     }
 
     public String getName() {
-        return name;
+        return "C: " + crossoverOperator.getClass().getSimpleName()
+                + ", M: " + mutationOperator.getClass().getSimpleName();
     }
 
     public int getNumberOfParents() {
-        return crossoverOperator != null ? crossoverOperator.getNumberOfParents() : 2;
+        return crossoverOperator.getNumberOfParents();
     }
 
     public List<S> apply(List<S> parents) {
-        List<S> offspring;
-        if (crossoverOperator != null) {
-            offspring = crossoverOperator.execute(parents);
-        } else {
-            offspring = new ArrayList<>();
-            for (S parent : parents) {
-                offspring.add((S) parent.copy());
-            }
+        List<S> offspring = crossoverOperator.execute(parents);
+
+        for (S s : offspring) {
+            mutationOperator.execute(s);
         }
 
-        List<S> resultOffspring = new ArrayList<>();
-        if (mutationOperator != null) {
-            for (S s : offspring) {
-                resultOffspring.add(mutationOperator.execute(s));
-            }
-        }
-        return resultOffspring;
+        return offspring;
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 83 * hash + Objects.hashCode(this.name);
+        hash = 83 * hash + Objects.hashCode(this.getName());
         return hash;
     }
 
@@ -113,7 +110,7 @@ public class LowLevelHeuristic<S extends Solution<?>> {
             return false;
         }
         final LowLevelHeuristic<?> other = (LowLevelHeuristic<?>) obj;
-        return Objects.equals(this.name, other.name);
+        return Objects.equals(this.getName(), other.getName());
     }
 
 }

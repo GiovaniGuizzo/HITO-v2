@@ -1,6 +1,6 @@
-package br.ufpr.inf.gres.hito.hyperheuristic.algorithm;
+package br.ufpr.inf.gres.hito.algorithm;
 
-import br.ufpr.inf.gres.hito.hyperheuristic.selectionmethod.ChoiceFunction;
+import br.ufpr.inf.gres.hito.selectionmethod.ChoiceFunction;
 import br.ufpr.inf.gres.hito.lowlevelheuristic.LowLevelHeuristic;
 import java.util.*;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;

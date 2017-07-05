@@ -1,4 +1,4 @@
-package br.ufpr.inf.gres.hito.hyperheuristic.selectionmethod;
+package br.ufpr.inf.gres.hito.selectionmethod;
 
 import br.ufpr.inf.gres.hito.lowlevelheuristic.LowLevelHeuristic;
 import com.google.common.collect.ArrayListMultimap;
@@ -21,6 +21,12 @@ public class ChoiceFunction<S extends Solution<?>> {
         this.alpha = alpha;
         this.beta = beta;
         this.random = new Random();
+    }
+
+    public ChoiceFunction(double alpha, double beta, long seed) {
+        this.alpha = alpha;
+        this.beta = beta;
+        this.random = new Random(seed);
     }
 
     public LowLevelHeuristic<S> choose(Collection<LowLevelHeuristic<S>> lowLevelHeuristics) {
