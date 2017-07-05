@@ -102,6 +102,12 @@ public class LowLevelHeuristicTest {
     }
 
     @Test
+    public void testToString() {
+        LowLevelHeuristic instance = new LowLevelHeuristic(new PMXCrossover(1.0), new PermutationSwapMutation<>(1.0));
+        assertEquals("C: PMXCrossover, M: PermutationSwapMutation", instance.toString());
+    }
+
+    @Test
     public void testGetNumberOfParents() {
         final PMXCrossover pmxCrossover = new PMXCrossover(1.0);
         LowLevelHeuristic instance = new LowLevelHeuristic(pmxCrossover, new PermutationSwapMutation<>(1.0));

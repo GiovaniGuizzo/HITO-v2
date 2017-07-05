@@ -113,4 +113,9 @@ public class LowLevelHeuristic<S extends Solution<?>> {
         return Objects.equals(this.getName(), other.getName());
     }
 
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
 }

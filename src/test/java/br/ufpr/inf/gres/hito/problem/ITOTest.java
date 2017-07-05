@@ -1,10 +1,9 @@
 package br.ufpr.inf.gres.hito.problem;
 
-import javax.management.JMException;
+import java.io.FileNotFoundException;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.uma.jmetal.solution.PermutationSolution;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -15,13 +14,18 @@ public class ITOTest {
     private final ITO ito1;
     private final ITO ito2;
 
-    public ITOTest() throws ClassNotFoundException {
+    public ITOTest() throws FileNotFoundException {
         ito1 = new ITO("src/test/resources/test1.txt");
         ito2 = new ITO("src/test/resources/test2.txt");
     }
 
+    @Test(expected = FileNotFoundException.class)
+    public void testConstructor() throws FileNotFoundException {
+        new ITO("src/test/resources/unknown.txt");
+    }
+
     @Test
-    public void testMaps() throws ClassNotFoundException {
+    public void testMaps() {
         String expected = "0,1.3,4.6\n"
                 + "1,0.2\n"
                 + "2,1.3,4.5,4.6\n"
@@ -39,13 +43,13 @@ public class ITOTest {
     }
 
     @Test
-    public void testUniqueIds() throws ClassNotFoundException {
+    public void testUniqueIds() {
         String expected = "0,1,2,3,4";
         assertEquals(expected, ito1.getUniqueIdsAsString());
     }
 
     @Test
-    public void testRepairSolution() throws ClassNotFoundException, JMException {
+    public void testRepairSolution() {
         PermutationSolution<Integer> solution = ito1.createSolution();
         solution.setVariableValue(0, 0);
         solution.setVariableValue(1, 1);
@@ -64,7 +68,7 @@ public class ITOTest {
     }
 
     @Test
-    public void testRepairSolution2() throws ClassNotFoundException, JMException {
+    public void testRepairSolution2() {
         PermutationSolution<Integer> solution = ito1.createSolution();
         solution.setVariableValue(0, 4);
         solution.setVariableValue(1, 2);
@@ -83,7 +87,7 @@ public class ITOTest {
     }
 
     @Test
-    public void testObjectives() throws ClassNotFoundException, JMException {
+    public void testObjectives() {
         PermutationSolution<Integer> solution = ito1.createSolution();
         solution.setVariableValue(0, 0);
         solution.setVariableValue(1, 1);
@@ -98,7 +102,7 @@ public class ITOTest {
     }
 
     @Test
-    public void testObjectives2() throws ClassNotFoundException, JMException {
+    public void testObjectives2() {
         PermutationSolution<Integer> solution = ito1.createSolution();
         solution.setVariableValue(0, 4);
         solution.setVariableValue(1, 2);
@@ -113,7 +117,7 @@ public class ITOTest {
     }
 
     @Test
-    public void testObjectives3() throws ClassNotFoundException, JMException {
+    public void testObjectives3() {
         PermutationSolution<Integer> solution = ito2.createSolution();
         solution.setVariableValue(0, 0);
         solution.setVariableValue(1, 1);

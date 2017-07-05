@@ -5,8 +5,6 @@ import com.google.common.base.Splitter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.uma.jmetal.problem.impl.AbstractIntegerPermutationProblem;
 import org.uma.jmetal.solution.PermutationSolution;
 
@@ -21,7 +19,7 @@ public class ITO extends AbstractIntegerPermutationProblem {
     protected Map<Integer, Set<String>> extensionMap;
     protected Set<Integer> uniqueUnitIds;
 
-    public ITO(String methodMatrixFile) throws ClassNotFoundException {
+    public ITO(String methodMatrixFile) throws FileNotFoundException {
         this.methodMap = new LinkedHashMap<>();
         this.attributeMap = new LinkedHashMap<>();
         this.extensionMap = new LinkedHashMap<>();
@@ -33,7 +31,7 @@ public class ITO extends AbstractIntegerPermutationProblem {
         setName("ITO");
     }
 
-    protected final void readFile(String methodMatrixFile) {
+    protected final void readFile(String methodMatrixFile) throws FileNotFoundException {
         try (Scanner matrixScanner = new Scanner(new File(methodMatrixFile))) {
 
             List<Map<Integer, Set<String>>> workingList = new ArrayList<>();
@@ -63,8 +61,6 @@ public class ITO extends AbstractIntegerPermutationProblem {
                     workingMap.put(unit, setOfDependencies);
                 }
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ITO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -163,18 +159,6 @@ public class ITO extends AbstractIntegerPermutationProblem {
 
     public String getExtensionMapAsString() {
         return getMapAsString(extensionMap);
-    }
-
-    public Map<Integer, Set<String>> getMethodMatrix() {
-        return new LinkedHashMap<>(methodMap);
-    }
-
-    public Map<Integer, Set<String>> getAttributeMatrix() {
-        return new LinkedHashMap<>(attributeMap);
-    }
-
-    public Map<Integer, Set<String>> getExtensionMatrix() {
-        return new LinkedHashMap<>(extensionMap);
     }
 
     private String getMapAsString(Map<Integer, Set<String>> map) {

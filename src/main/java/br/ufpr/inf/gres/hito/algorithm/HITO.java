@@ -1,7 +1,8 @@
 package br.ufpr.inf.gres.hito.algorithm;
 
-import br.ufpr.inf.gres.hito.selectionmethod.ChoiceFunction;
 import br.ufpr.inf.gres.hito.lowlevelheuristic.LowLevelHeuristic;
+import br.ufpr.inf.gres.hito.selectionmethod.ChoiceFunction;
+import com.google.common.base.Preconditions;
 import java.util.*;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -23,7 +24,7 @@ public class HITO<S extends Solution<?>> extends NSGAII<S> {
     protected Set<LowLevelHeuristic<S>> lowLevelHeuristics;
 
     public HITO(Problem<S> problem,
-            int maxGenerations,
+            int maxEvaluations,
             int populationSize,
             double alpha,
             double beta,
@@ -32,7 +33,7 @@ public class HITO<S extends Solution<?>> extends NSGAII<S> {
             SelectionOperator<List<S>, S> selectionOperator,
             SolutionListEvaluator<S> evaluator) {
         super(problem,
-                maxGenerations,
+                maxEvaluations,
                 populationSize,
                 null,
                 null,
@@ -50,6 +51,10 @@ public class HITO<S extends Solution<?>> extends NSGAII<S> {
     @Override
     public String getName() {
         return "HITO (NSGA-II)";
+    }
+
+    public Set<LowLevelHeuristic<S>> getLowLevelHeuristics() {
+        return lowLevelHeuristics;
     }
 
     protected void initalizeLowLevelHeuristics(Collection<CrossoverOperator<S>> crossoverOperators, Collection<MutationOperator<S>> mutationOperators) {
@@ -70,9 +75,11 @@ public class HITO<S extends Solution<?>> extends NSGAII<S> {
         for (MutationOperator<S> mutationOperator : mutationOperators) {
             this.lowLevelHeuristics.add(new LowLevelHeuristic<>(null, mutationOperator));
         }
+
+        Preconditions.checkArgument(!this.lowLevelHeuristics.isEmpty(), "There must be at least one crossover or mutation operator.");
     }
 
-    private void initialExecutionLowLevelHeuristics() {
+    protected void initialExecutionLowLevelHeuristics() {
         List<S> parents = new ArrayList<>();
         parents.add(getProblem().createSolution());
         parents.add(getProblem().createSolution());
@@ -92,7 +99,7 @@ public class HITO<S extends Solution<?>> extends NSGAII<S> {
         DominanceComparator<S> dominanceComparator = new DominanceComparator<>();
         for (S parent : parents) {
             for (S child : children) {
-                quality += (dominanceComparator.compare(parent, child) + 1) / 2;
+                quality += ((double) dominanceComparator.compare(parent, child) + 1) / 2;
             }
         }
 

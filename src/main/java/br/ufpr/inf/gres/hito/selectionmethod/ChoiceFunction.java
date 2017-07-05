@@ -4,8 +4,8 @@ import br.ufpr.inf.gres.hito.lowlevelheuristic.LowLevelHeuristic;
 import com.google.common.collect.ArrayListMultimap;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -15,18 +15,12 @@ public class ChoiceFunction<S extends Solution<?>> {
 
     protected double alpha;
     protected double beta;
-    private final Random random;
+    private final JMetalRandom random;
 
     public ChoiceFunction(double alpha, double beta) {
         this.alpha = alpha;
         this.beta = beta;
-        this.random = new Random();
-    }
-
-    public ChoiceFunction(double alpha, double beta, long seed) {
-        this.alpha = alpha;
-        this.beta = beta;
-        this.random = new Random(seed);
+        this.random = JMetalRandom.getInstance();
     }
 
     public LowLevelHeuristic<S> choose(Collection<LowLevelHeuristic<S>> lowLevelHeuristics) {
@@ -44,7 +38,7 @@ public class ChoiceFunction<S extends Solution<?>> {
         }
 
         List<LowLevelHeuristic<S>> bestLowLevelHeuristics = choiceMap.get(bestChoiceValue);
-        int randomValue = random.nextInt(bestLowLevelHeuristics.size());
+        int randomValue = random.nextInt(0, bestLowLevelHeuristics.size() - 1);
 
         return bestLowLevelHeuristics.get(randomValue);
     }
